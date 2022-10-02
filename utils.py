@@ -1,7 +1,9 @@
 import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 import tensorflow as tf
+import tensorflow_text as tf_text
+
 import pathlib
 
 class ShapeChecker():
@@ -70,10 +72,28 @@ def load_data(BATCH_SIZE=64, debug=False):
             print(input_batch[:5])
             print("")
             print(target_batch[:5])
+            print("")
             break
 
-    return dataset
+    return dataset, inp, targ
+
+
+def tf_lower_and_split_punct(text):
+  text = tf_text.normalize_utf8(text, 'NFKD')
+  text = tf.strings.lower(text)
+
+  text = tf.strings.regex_replace(text, '[^ a-z.?!,¿]', '')
+  text = tf.strings.regex_replace(text, '[.?!,¿]', r' \0 ')
+
+  text = tf.strings.strip(text)
+
+  text = tf.strings.join(['[START]', text, '[END]'], separator=" ")
+  return text
 
 
 if __name__ == "__main__":
-    load_data(debug=True)
+  load_data(debug=True)
+
+  text = "¿Todavía está en casa?"
+  print(text)
+  print(tf_lower_and_split_punct(text).numpy().decode())
