@@ -3,7 +3,6 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 import numpy as np
 import typing
-from typing import Any, Tuple
 
 import tensorflow as tf
 
@@ -13,7 +12,7 @@ import matplotlib.ticker
 import pathlib
 
 from utils import load_data, tf_lower_and_split_punct
-from models import Encoder, BahdanauAttention
+from models import Encoder, BahdanauAttention, Decoder
 
 
 def main():
@@ -46,8 +45,8 @@ def main():
         units
     )
 
-    attention_layer = BahdanauAttention(units)
-
+    decoder = Decoder(output_text_processor.vocabulary_size(),
+                      embedding_dim ,units)
 
 
 if __name__ == "__main__":
